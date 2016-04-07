@@ -1,4 +1,4 @@
-package com.clara;
+package com.Natalman;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,6 +51,7 @@ public class Main {
     static boolean gameOver;      //Used to work out what message, if any, to display on the screen
     static boolean removeInstructions = false;  // Same as above
 
+
     private static class GameDisplay extends JPanel {
 
         @Override
@@ -59,23 +60,53 @@ public class Main {
 
             //System.out.println("* Repaint *");
 
+
             if (gameOver == true) {
+
+
+                //Setting up the scores
+                int ScoreHuman = 0; //Initializing human score
+                int ScoreComp = 0;  //Initializing computer score
+
+                //Getting computer score
+                if (ballX >= screenSize){
+                    ScoreComp++;
+
+                //Getting human score
+                }
+                if (ballX <= 0){
+                    ScoreHuman++;
+                }
+                g.setColor(Color.magenta);
                 g.drawString( "Game over!", 20, 30 );
+                g.drawString("Computer score: " + ScoreComp, 20, 50);
+                g.drawString("Human Score: " + ScoreHuman, 20, 70);
+                g.drawString( "Press r to restart the game", 20, 90);
                 return;
             }
 
             if (removeInstructions == false ) {
+                //Setting the color of the display in magenta
+                g.setColor(Color.MAGENTA);
+
                 g.drawString("Pong! Press up or down to move", 20, 30);
                 g.drawString("Press q to quit", 20, 60);
             }
 
-            g.setColor(Color.blue);
+
+            // Setting the color the ball will be fill with
+            g.setColor(Color.ORANGE);
 
             //While game is playing, these methods draw the ball, paddles, using the global variables
             //Other parts of the code will modify these variables
 
             //Ball - a circle is just an oval with the height equal to the width
             g.drawOval((int)ballX, (int)ballY, ballSize, ballSize);
+
+            //Now filling the ball with orange
+            g.fillOval((int)ballX, (int)ballY, ballSize,ballSize);
+
+            g.setColor(Color.blue);
             //Computer paddle
             g.drawLine(paddleDistanceFromSide, computerPaddleY - paddleSize, paddleDistanceFromSide, computerPaddleY + paddleSize);
             //Human paddle
@@ -85,15 +116,38 @@ public class Main {
     }
 
     //Listen for user pressing a key, and moving human paddle in response
-    private static class KeyHandler implements KeyListener {
+    private static class KeyHandler extends JFrame implements KeyListener{
         
         @Override
         public void keyTyped(KeyEvent ev) {
             char keyPressed = ev.getKeyChar();
             char q = 'q';
+
             if( keyPressed == q){
                 System.exit(0);    //quit if user presses the q key.
             }
+            if (keyPressed == 'r'){   // Restart the game if the user presses r key.
+
+                JPanel content = new JPanel();
+
+                content.setLayout(new BorderLayout());
+                content.add(gamePanel, BorderLayout.CENTER);
+
+                JFrame window = new JFrame();
+                window.setUndecorated(true);
+                window.setContentPane(content);
+
+                window.setVisible(true);
+
+                KeyHandler listener = new KeyHandler();
+                window.addKeyListener(listener);
+
+
+                gamePanel.repaint();
+
+                timer.start();
+            }
+
         }
         
         @Override
@@ -112,6 +166,9 @@ public class Main {
                 System.out.println("up key");
                 moveUp();
             }
+
+
+
 
             //ev.getComponent() returns the GUI component that generated this event
             //In this case, it will be GameDisplay JPanel
@@ -142,7 +199,7 @@ public class Main {
         JPanel content = new JPanel();
         content.setLayout(new BorderLayout());
         content.add(gamePanel, BorderLayout.CENTER);
-        
+
         JFrame window = new JFrame();
         window.setUndecorated(true);   //Hides the title bar.
 
@@ -272,6 +329,8 @@ public class Main {
         // ** TRIGONOMETRY END **
 
     }
+
+
 }
 
 
